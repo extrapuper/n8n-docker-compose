@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    environment:
+      - DB_TYPE=sqlite
+      - DB_SQLITE_POOL_SIZE=3
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_RUNNERS_PROCESSES=1
+      - N8N_RUNNERS_WORKER_THREADS=2
+      - GENERIC_TIMEZONE=Europe/Berlin
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_PROTOCOL=http
+      - N8N_HOST=localhost
+      - WEBHOOK_URL=http://localhost
+      - N8N_EDITOR_BASE_URL=http://localhost
+      - N8N_PUBLIC_URL=http://localhost
+      - N8N_TRUSTED_PROXIES=0.0.0.0/0
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_PERSONALIZATION_ENABLED=false
+      - N8N_HIRING_BANNER_ENABLED=false
+    volumes:
+      - n8n_data:/home/node/.n8n
+    expose:
+      - "5678"
+
+  nginx:
+    image: nginx:stable
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+
+volumes:
+  n8n_data:
